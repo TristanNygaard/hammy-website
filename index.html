@@ -1,6 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
+<script>
+// Import the functions you need from the SDKs you need
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const storage = firebase.storage();
+
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyCZxpdLHR4uzMsKnkjcN_qhldlH3wqvC2Q",
+  authDomain: "lovehammy-27a02.firebaseapp.com",
+  databaseURL: "https://lovehammy-27a02-default-rtdb.firebaseio.com",
+  projectId: "lovehammy-27a02",
+  storageBucket: "lovehammy-27a02.firebasestorage.app",
+  messagingSenderId: "271317432273",
+  appId: "1:271317432273:web:58bf9bb0a09ac2dd7252f0"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+</script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Hammy Moments</title>
@@ -62,6 +89,7 @@
     .controls label, .controls input, .controls select, .controls button {
       margin-right: 10px;
     }
+    
   </style>
 </head>
 <body>
@@ -143,25 +171,61 @@
       document.getElementById("eraserButton").textContent = erasing ? "Eraser: On" : "Eraser: Off";
     }
 
-    function saveDrawing() {
-      const dataURL = canvas.toDataURL();
-      const img = document.createElement("img");
-      img.src = dataURL;
-      document.getElementById("gallery").appendChild(img);
-      clearCanvas();
-    }
+async function saveDrawing() {
+  const dataURL = canvas.toDataURL("image/png");
+  const blob = await (await fetch(dataURL)).blob();
+  const filename = `drawing_${Date.now()}.png`;
+  const ref = storage.ref().child("drawings/" + filename);
+  await ref.put(blob);
+  const url = await ref.getDownloadURL();
 
-    function submitMoment() {
-      const input = document.getElementById("momentInput");
-      const memory = input.value.trim();
-      if (memory !== "") {
-        const div = document.createElement("div");
-        div.className = "memory-item";
-        div.textContent = memory;
-        document.getElementById("memoryList").appendChild(div);
-        input.value = "";
-      }
-    }
+  const img = document.createElement("img");
+  img.src = url;
+  document.getElementById("gallery").appendChild(img);
+
+  clearCanvas();
+}
+async function loadDrawings() {
+  const gallery = document.getElementById("gallery");
+  gallery.innerHTML = "";
+  const list = await storage.ref("drawings").listAll();
+  for (const item of list.items) {
+    const url = await item.getDownloadURL();
+    const img = document.createElement("img");
+    img.src = url;
+    gallery.appendChild(img);
+  }
+}
+
+
+async function submitMoment() {
+  const input = document.getElementById("momentInput");
+  const memory = input.value.trim();
+  if (memory !== "") {
+    await db.collection("moments").add({
+      text: memory,
+      timestamp: Date.now()
+    });
+    input.value = "";
+    loadMoments();
+  }
+}
+
+async function loadMoments() {
+  const memoryList = document.getElementById("memoryList");
+  memoryList.innerHTML = "";
+  const snapshot = await db.collection("moments").orderBy("timestamp", "desc").get();
+  snapshot.forEach(doc => {
+    const div = document.createElement("div");
+    div.className = "memory-item";
+    div.textContent = doc.data().text;
+    memoryList.appendChild(div);
+  });
+}
+window.onload = function() {
+  loadMoments();
+  loadDrawings();
+};
   </script>
 </body>
 </html>
