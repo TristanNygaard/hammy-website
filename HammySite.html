@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hammy Moments</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 20px;
+      background-color: #f4f4f4;
+    }
+    h1 {
+      text-align: center;
+      color: #444;
+    }
+    .moment, .drawing-section {
+      background: white;
+      padding: 20px;
+      margin: 20px auto;
+      width: 80%;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .moment textarea {
+      width: 100%;
+      height: 80px;
+      padding: 10px;
+      font-size: 1em;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      resize: none;
+    }
+    .moment button {
+      margin-top: 10px;
+      padding: 8px 12px;
+      font-size: 1em;
+    }
+    .memory-list {
+      margin-top: 20px;
+    }
+    .memory-item {
+      background: #eef;
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 5px;
+    }
+    canvas {
+      border: 1px solid #ccc;
+      display: block;
+      margin: 10px 0;
+    }
+    #gallery img {
+      max-width: 100px;
+      margin: 5px;
+      border: 1px solid #aaa;
+      border-radius: 5px;
+    }
+    .controls {
+      margin-bottom: 10px;
+    }
+    .controls label, .controls input, .controls select, .controls button {
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Hammy's Hall of Fame</h1>
+
+  <div class="moment">
+    <h2>Share a Favorite Hammy Moment</h2>
+    <textarea id="momentInput" placeholder="Write a moment you shared with Hammy..."></textarea>
+    <br>
+    <button onclick="submitMoment()">Share Moment</button>
+    <div class="memory-list" id="memoryList"></div>
+  </div>
+
+  <div class="drawing-section">
+    <h2>Draw Something for Hammy</h2>
+    <div class="controls">
+      <label for="colorPicker">Color:</label>
+      <input type="color" id="colorPicker" value="#000000">
+
+      <label for="brushSize">Brush Size:</label>
+      <input type="range" id="brushSize" min="1" max="20" value="2">
+
+      <button onclick="toggleEraser()" id="eraserButton">Eraser: Off</button>
+      <button onclick="clearCanvas()">Clear</button>
+      <button onclick="saveDrawing()">Upload Drawing</button>
+    </div>
+    <canvas id="drawCanvas" width="500" height="300"></canvas>
+
+    <h3>Hammy Art Gallery</h3>
+    <div id="gallery"></div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById("drawCanvas");
+    const ctx = canvas.getContext("2d");
+    let drawing = false;
+    let erasing = false;
+    let brushColor = document.getElementById("colorPicker").value;
+    let brushSize = document.getElementById("brushSize").value;
+
+    canvas.addEventListener("mousedown", () => drawing = true);
+    canvas.addEventListener("mouseup", () => {
+      drawing = false;
+      ctx.beginPath();
+    });
+    canvas.addEventListener("mousemove", draw);
+
+    document.getElementById("colorPicker").addEventListener("input", (e) => {
+      brushColor = e.target.value;
+    });
+
+    document.getElementById("brushSize").addEventListener("input", (e) => {
+      brushSize = e.target.value;
+    });
+
+    function draw(e) {
+      if (!drawing) return;
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      ctx.lineWidth = brushSize;
+      ctx.lineCap = "round";
+      ctx.strokeStyle = erasing ? "#ffffff" : brushColor;
+
+      ctx.lineTo(x, y);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+    }
+
+    function clearCanvas() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.beginPath();
+    }
+
+    function toggleEraser() {
+      erasing = !erasing;
+      document.getElementById("eraserButton").textContent = erasing ? "Eraser: On" : "Eraser: Off";
+    }
+
+    function saveDrawing() {
+      const dataURL = canvas.toDataURL();
+      const img = document.createElement("img");
+      img.src = dataURL;
+      document.getElementById("gallery").appendChild(img);
+      clearCanvas();
+    }
+
+    function submitMoment() {
+      const input = document.getElementById("momentInput");
+      const memory = input.value.trim();
+      if (memory !== "") {
+        const div = document.createElement("div");
+        div.className = "memory-item";
+        div.textContent = memory;
+        document.getElementById("memoryList").appendChild(div);
+        input.value = "";
+      }
+    }
+  </script>
+</body>
+</html>
