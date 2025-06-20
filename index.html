@@ -1,33 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<head>
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
-
-  <!-- Firebase Config and Initialization -->
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyCZxpdLHR4uzMsKnkjcN_qhldlH3wqvC2Q",
-      authDomain: "lovehammy-27a02.firebaseapp.com",
-      databaseURL: "https://lovehammy-27a02-default-rtdb.firebaseio.com",
-      projectId: "lovehammy-27a02",
-      storageBucket: "lovehammy-27a02.appspot.com",
-      messagingSenderId: "271317432273",
-      appId: "1:271317432273:web:58bf9bb0a09ac2dd7252f0"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-    const storage = firebase.storage();
-  </script>
-
-
-
-
-
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Hammy Moments</title>
@@ -39,9 +12,15 @@
     }
     h1 {
       text-align: center;
-      color: #444;
+      color: #222;
     }
-    .moment, .drawing-section {
+    .header-note {
+      text-align: center;
+      font-size: 0.95em;
+      color: #666;
+      margin-bottom: 20px;
+    }
+    .section {
       background: white;
       padding: 20px;
       margin: 20px auto;
@@ -49,185 +28,52 @@
       border-radius: 10px;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
-    .moment textarea {
-      width: 100%;
-      height: 80px;
-      padding: 10px;
-      font-size: 1em;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      resize: none;
-    }
-    .moment button {
-      margin-top: 10px;
-      padding: 8px 12px;
-      font-size: 1em;
-    }
-    .memory-list {
-      margin-top: 20px;
-    }
-    .memory-item {
+    .quote-wall p {
       background: #eef;
       padding: 10px;
-      margin: 5px 0;
       border-radius: 5px;
+      margin: 8px 0;
     }
-    canvas {
-      border: 1px solid #ccc;
-      display: block;
-      margin: 10px 0;
-    }
-    #gallery img {
-      max-width: 100px;
-      margin: 5px;
-      border: 1px solid #aaa;
-      border-radius: 5px;
-    }
-    .controls {
-      margin-bottom: 10px;
-    }
-    .controls label, .controls input, .controls select, .controls button {
-      margin-right: 10px;
-    }
-    
+.image-wall {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, auto));
+  gap: 20px;
+  justify-content: center;
+}
+.image-wall img {
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  border: 2px solid #aaa;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
   </style>
 </head>
 <body>
   <h1>Hammy's Hall of Fame</h1>
-
-  <div class="moment">
-    <h2>Share a Favorite Hammy Moment</h2>
-    <textarea id="momentInput" placeholder="Write a moment you shared with Hammy..."></textarea>
-    <br>
-    <button onclick="submitMoment()">Share Moment</button>
-    <div class="memory-list" id="memoryList"></div>
+  <div class="header-note">
+    <strong>WE LOVE HAMMY</strong> <br />
+    Made by <strong>Knutte_</strong> on Twitter<br />
+    For submissions, send to <strong>cornoffthegreat</strong> on Discord
   </div>
 
-  <div class="drawing-section">
-    <h2>Draw Something for Hammy</h2>
-    <div class="controls">
-      <label for="colorPicker">Color:</label>
-      <input type="color" id="colorPicker" value="#000000">
-
-      <label for="brushSize">Brush Size:</label>
-      <input type="range" id="brushSize" min="1" max="20" value="2">
-
-      <button onclick="toggleEraser()" id="eraserButton">Eraser: Off</button>
-      <button onclick="clearCanvas()">Clear</button>
-      <button onclick="saveDrawing()">Upload Drawing</button>
-    </div>
-    <canvas id="drawCanvas" width="500" height="300"></canvas>
-
-    <h3>Hammy Art Gallery</h3>
-    <div id="gallery"></div>
+  <div class="section quote-wall">
+    <h2>Favorite Hammy Quotes</h2>
+    <p>"Our duck duck duck your duck"</p>
+    <p>"heart my freinds , my oomfs</p>
+    <p>"Soup full of mung, grip tight on the Mauzer"</p>
+    <p>"I thought that was a meme vid why did i watch like 2 min of furries</p>
+    <p>"We come in piss</p>
   </div>
 
-  <script>
-    const canvas = document.getElementById("drawCanvas");
-    const ctx = canvas.getContext("2d");
-    let drawing = false;
-    let erasing = false;
-    let brushColor = document.getElementById("colorPicker").value;
-    let brushSize = document.getElementById("brushSize").value;
-
-    canvas.addEventListener("mousedown", () => drawing = true);
-    canvas.addEventListener("mouseup", () => {
-      drawing = false;
-      ctx.beginPath();
-    });
-    canvas.addEventListener("mousemove", draw);
-
-    document.getElementById("colorPicker").addEventListener("input", (e) => {
-      brushColor = e.target.value;
-    });
-
-    document.getElementById("brushSize").addEventListener("input", (e) => {
-      brushSize = e.target.value;
-    });
-
-    function draw(e) {
-      if (!drawing) return;
-      const rect = canvas.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-
-      ctx.lineWidth = brushSize;
-      ctx.lineCap = "round";
-      ctx.strokeStyle = erasing ? "#ffffff" : brushColor;
-
-      ctx.lineTo(x, y);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(x, y);
-    }
-
-    function clearCanvas() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.beginPath();
-    }
-
-    function toggleEraser() {
-      erasing = !erasing;
-      document.getElementById("eraserButton").textContent = erasing ? "Eraser: On" : "Eraser: Off";
-    }
-
-async function saveDrawing() {
-  const dataURL = canvas.toDataURL("image/png");
-  const blob = await (await fetch(dataURL)).blob();
-  const filename = `drawing_${Date.now()}.png`;
-  const ref = storage.ref().child("drawings/" + filename);
-  await ref.put(blob);
-  const url = await ref.getDownloadURL();
-
-  const img = document.createElement("img");
-  img.src = url;
-  document.getElementById("gallery").appendChild(img);
-
-  clearCanvas();
-}
-async function loadDrawings() {
-  const gallery = document.getElementById("gallery");
-  gallery.innerHTML = "";
-  const list = await storage.ref("drawings").listAll();
-  for (const item of list.items) {
-    const url = await item.getDownloadURL();
-    const img = document.createElement("img");
-    img.src = url;
-    gallery.appendChild(img);
-  }
-}
-
-
-async function submitMoment() {
-  const input = document.getElementById("momentInput");
-  const memory = input.value.trim();
-  if (memory !== "") {
-    await db.collection("moments").add({
-      text: memory,
-      timestamp: Date.now()
-    });
-    input.value = "";
-    loadMoments();
-  }
-}
-
-async function loadMoments() {
-  const memoryList = document.getElementById("memoryList");
-  memoryList.innerHTML = "";
-  const snapshot = await db.collection("moments").orderBy("timestamp", "desc").get();
-  snapshot.forEach(doc => {
-    const div = document.createElement("div");
-    div.className = "memory-item";
-    div.textContent = doc.data().text;
-    memoryList.appendChild(div);
-  });
-}
-
-window.onload = function () {
-  loadMoments();
-  loadDrawings();
-};
-
-  </script>
+  <div class="section image-wall">
+    <h2>Hammy Image Gallery</h2>
+    <img src="https://media.discordapp.net/attachments/1363930019780497431/1385727269502193896/Screenshot_20250620_220508.jpg?ex=68571e96&is=6855cd16&hm=2e60d6f025002f51148ef5a4af1350063b49ad0f35ca8d240bd568812db63f55&=&format=webp&width=563&height=776" alt="Hammy moment 1" />
+    <img src="https://media.discordapp.net/attachments/1379084123066335394/1385740523121152120/image.png?ex=68572aee&is=6855d96e&hm=b73ce262791b3c6ffdb63305cae751f6e97939129668760733374ab5eddc2a29&=&format=webp&quality=lossless" alt="Hammy moment 2" />
+    <img src="https://media.discordapp.net/attachments/1379084123066335394/1385741446325207194/GgwLRksXMAAjZgv.png?ex=68572bca&is=6855da4a&hm=86a8a3ba47b6b265a2748117c948678d133a673feaa1f78d74d4810ca1cd1a3c&=&format=webp&quality=lossless" alt="Hammy moment 3" />
+    <!-- Add more images here -->
+  </div>
 </body>
 </html>
