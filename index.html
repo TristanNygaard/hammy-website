@@ -5,75 +5,308 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Hammy Moments</title>
   <style>
-    body {
-      font-family: sans-serif;
-      margin: 20px;
-      background-color: #f4f4f4;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
-    h1 {
-      text-align: center;
-      color: #222;
-    }
-    .header-note {
-      text-align: center;
-      font-size: 0.95em;
-      color: #666;
-      margin-bottom: 20px;
-    }
-    .section {
-      background: white;
-      padding: 20px;
-      margin: 20px auto;
-      width: 80%;
-      border-radius: 10px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    .quote-wall p {
-      background: #eef;
-      padding: 10px;
-      border-radius: 5px;
-      margin: 8px 0;
-    }
-.image-wall {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, auto));
-  gap: 20px;
-  justify-content: center;
-}
-.image-wall img {
-  width: auto;
-  max-width: 100%;
-  height: auto;
-  border: 2px solid #aaa;
-  border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
 
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-height: 100vh;
+      background: #000;
+      color: #fff;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    #background-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    header {
+      text-align: center;
+      padding: 40px 0 30px;
+      background: rgba(0, 0, 0, 0.7);
+      border-radius: 15px;
+      margin-bottom: 30px;
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    h1 {
+      font-size: 3.5rem;
+      color: #ff6b6b;
+      margin-bottom: 10px;
+      text-shadow: 0 0 15px rgba(255, 107, 107, 0.7);
+      background: linear-gradient(45deg, #ff6b6b, #ffa502);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 2px;
+    }
+
+    .header-note {
+      font-size: 1.1rem;
+      color: #b0b0b0;
+      margin-top: 15px;
+      line-height: 1.6;
+    }
+
+    .header-note strong {
+      color: #ffa502;
+      font-weight: 600;
+    }
+
+    .section {
+      background: rgba(30, 30, 40, 0.85);
+      padding: 30px;
+      margin: 30px 0;
+      border-radius: 15px;
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      transition: transform 0.3s ease;
+    }
+
+    .section:hover {
+      transform: translateY(-5px);
+    }
+
+    .section h2 {
+      color: #ffa502;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid rgba(255, 165, 2, 0.3);
+      font-size: 2rem;
+    }
+
+    .quote-wall p {
+      background: rgba(25, 25, 35, 0.8);
+      padding: 18px;
+      border-radius: 10px;
+      margin: 15px 0;
+      font-size: 1.2rem;
+      border-left: 4px solid #ff6b6b;
+      transition: all 0.3s ease;
+      font-style: italic;
+      color: #e0e0e0;
+    }
+
+    .quote-wall p:hover {
+      background: rgba(35, 35, 45, 0.9);
+      transform: translateX(10px);
+      border-left: 4px solid #ffa502;
+    }
+
+    .image-wall {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 25px;
+      margin-top: 20px;
+    }
+
+    .image-wall img {
+      width: 100%;
+      height: 300px;
+      object-fit: cover;
+      border-radius: 10px;
+      border: 3px solid #444;
+      transition: all 0.4s ease;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    .image-wall img:hover {
+      transform: scale(1.05);
+      border-color: #ffa502;
+      box-shadow: 0 12px 25px rgba(255, 165, 2, 0.3);
+      z-index: 2;
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px 0;
+      margin-top: 40px;
+      color: #888;
+      font-size: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2.5rem;
+      }
+      
+      .section {
+        padding: 20px;
+      }
+      
+      .image-wall {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>
-  <h1>Hammy's Hall of Fame</h1>
-  <div class="header-note">
-    <strong>WE LOVE HAMMY</strong> <br />
-    Made by <strong>Knutte_</strong> on Twitter<br />
-    For submissions, send to <strong>cornoffthegreat</strong> on Discord
+  <canvas id="background-canvas"></canvas>
+  
+  <div class="container">
+    <header>
+      <h1>LOVE HAMMY</h1>
+      <div class="header-note">
+        <strong>WE LOVE HAMMY</strong> <br />
+        Made by <strong>Knutte_</strong> on Twitter<br />
+        For submissions, send to <strong>cornoffthegreat</strong> on Discord
+      </div>
+    </header>
+
+    <div class="section quote-wall">
+      <h2>Favorite Hammy Quotes</h2>
+      <p>"Our duck duck duck your duck"</p>
+      <p>"heart my freinds , my oomfs"</p>
+      <p>"Soup full of mung, grip tight on the Mauzer"</p>
+      <p>"I thought that was a meme vid why did i watch like 2 min of furries"</p>
+      <p>"We come in piss"</p>
+      <p>"Ham ham pang pang. We sell hamburgers. Hammy made hand mae."</p>
+    </div>
+
+    <div class="section image-wall">
+      <h2>Hammy Image Gallery</h2>
+      <div class="images-container">
+        <img src="https://i.ibb.co/jv4mNqhC/image.png"/>
+        <img src="https://i.ibb.co/Zz82NxqF/IMG-5001.jpg"/>
+        <img src="https://i.ibb.co/KpPgqBNk/IMG-4967.jpg"/>
+        <img src="https://i.ibb.co/cKqdcWWw/IMG-4944.jpg"/>
+        <img src="https://i.ibb.co/1WbNdQJ/IMG-4949.jpg"/>
+    </div>
   </div>
 
-  <div class="section quote-wall">
-    <h2>Favorite Hammy Quotes</h2>
-    <p>"Our duck duck duck your duck"</p>
-    <p>"heart my freinds , my oomfs</p>
-    <p>"Soup full of mung, grip tight on the Mauzer"</p>
-    <p>"I thought that was a meme vid why did i watch like 2 min of furries</p>
-    <p>"We come in piss</p>
-  </div>
-
-  <div class="section image-wall">
-    <h2>Hammy Image Gallery</h2>
-    <img src="https://media.discordapp.net/attachments/1363930019780497431/1385727269502193896/Screenshot_20250620_220508.jpg?ex=68571e96&is=6855cd16&hm=2e60d6f025002f51148ef5a4af1350063b49ad0f35ca8d240bd568812db63f55&=&format=webp&width=563&height=776" alt="Hammy moment 1" />
-    <img src="https://media.discordapp.net/attachments/1379084123066335394/1385740523121152120/image.png?ex=68572aee&is=6855d96e&hm=b73ce262791b3c6ffdb63305cae751f6e97939129668760733374ab5eddc2a29&=&format=webp&quality=lossless" alt="Hammy moment 2" />
-    <img src="https://media.discordapp.net/attachments/1379084123066335394/1385741446325207194/GgwLRksXMAAjZgv.png?ex=68572bca&is=6855da4a&hm=86a8a3ba47b6b265a2748117c948678d133a673feaa1f78d74d4810ca1cd1a3c&=&format=webp&quality=lossless" alt="Hammy moment 3" />
-    <!-- Add more images here -->
-  </div>
+  <script>
+    // Triangle background effect
+    const canvas = document.getElementById('background-canvas');
+    const ctx = canvas.getContext('2d');
+    
+    // Set canvas to full window size
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    
+    // Triangle class
+    class Triangle {
+      constructor() {
+        this.size = 25 + Math.random() * 25; // Size between 25-50px
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.color = `hsl(${Math.random() * 360}, 70%, 60%)`;
+        this.velocity = {
+          x: (Math.random() - 0.5) * 0.5,
+          y: (Math.random() - 0.5) * 0.5
+        };
+        this.rotation = Math.random() * Math.PI * 2;
+        this.rotationSpeed = (Math.random() - 0.5) * 0.02;
+      }
+      
+      draw() {
+        ctx.beginPath();
+        ctx.moveTo(
+          this.x + this.size * Math.cos(this.rotation),
+          this.y + this.size * Math.sin(this.rotation)
+        );
+        
+        for (let i = 1; i < 3; i++) {
+          ctx.lineTo(
+            this.x + this.size * Math.cos(this.rotation + i * Math.PI * 2 / 3),
+            this.y + this.size * Math.sin(this.rotation + i * Math.PI * 2 / 3)
+          );
+        }
+        
+        ctx.closePath();
+        ctx.strokeStyle = this.color;
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+      }
+      
+      update(mouse) {
+        // Rotation
+        this.rotation += this.rotationSpeed;
+        
+        // Mouse interaction
+        const dx = this.x - mouse.x;
+        const dy = this.y - mouse.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        // Push away from mouse
+        if (distance < 150) {
+          const force = (150 - distance) / 150;
+          const angle = Math.atan2(dy, dx);
+          this.x += Math.cos(angle) * force * 5;
+          this.y += Math.sin(angle) * force * 5;
+        } else {
+          // Regular movement
+          this.x += this.velocity.x;
+          this.y += this.velocity.y;
+        }
+        
+        // Boundary checks
+        if (this.x < -this.size) this.x = canvas.width + this.size;
+        if (this.x > canvas.width + this.size) this.x = -this.size;
+        if (this.y < -this.size) this.y = canvas.height + this.size;
+        if (this.y > canvas.height + this.size) this.y = -this.size;
+      }
+    }
+    
+    // Create triangles
+    const triangles = [];
+    const triangleCount = 100;
+    
+    for (let i = 0; i < triangleCount; i++) {
+      triangles.push(new Triangle());
+    }
+    
+    // Mouse position
+    const mouse = {
+      x: canvas.width / 2,
+      y: canvas.height / 2
+    };
+    
+    // Mouse move event
+    window.addEventListener('mousemove', (event) => {
+      mouse.x = event.x;
+      mouse.y = event.y;
+    });
+    
+    // Resize event
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+    
+    // Animation loop
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      triangles.forEach(triangle => {
+        triangle.update(mouse);
+        triangle.draw();
+      });
+      
+      requestAnimationFrame(animate);
+    }
+    
+    // Start animation
+    animate();
+  </script>
 </body>
 </html>
